@@ -1,9 +1,3 @@
-"""day1.py
-
-AOC Day 1
----------
-
-
 --- Day 1: The Tyranny of the Rocket Equation ---
 Santa has become stranded at the edge of the Solar System while delivering presents to other planets! To accurately calculate his position in space, safely align his warp drive, and return to Earth in time to save Christmas, he needs you to bring him measurements from fifty stars.
 
@@ -37,31 +31,3 @@ A module of mass 14 requires 2 fuel. This fuel requires no further fuel (2 divid
 At first, a module of mass 1969 requires 654 fuel. Then, this fuel requires 216 more fuel (654 / 3 - 2). 216 then requires 70 more fuel, which requires 21 fuel, which requires 5 fuel, which requires no further fuel. So, the total fuel required for a module of mass 1969 is 654 + 216 + 70 + 21 + 5 = 966.
 The fuel required by a module of mass 100756 and its fuel is: 33583 + 11192 + 3728 + 1240 + 411 + 135 + 43 + 12 + 2 = 50346.
 What is the sum of the fuel requirements for all of the modules on your spacecraft when also taking into account the mass of the added fuel? (Calculate the fuel requirements for each module separately, then add them all up at the end.)
-
-"""
-
-
-def get_data():
-    with open('data.txt', 'r') as f:
-        return [int(x) for x in f]
-
-
-def part1_compute(mass):
-    return (mass // 3) - 2
-
-
-def part2_compute(mass):
-    fuel = part1_compute(mass)
-    total = 0
-    while fuel > 0:
-        total += fuel
-        fuel = (fuel // 3) - 2
-    return total
-
-
-if __name__ == '__main__':
-    data = get_data()
-    output_1 = sum(part1_compute(x) for x in data)
-    output_2 = sum(part2_compute(x) for x in data)
-    print(f'Part 1: {output_1}')
-    print(f'Part 2: {output_2}')
