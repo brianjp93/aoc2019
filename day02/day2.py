@@ -29,10 +29,9 @@ def find_inputs(data, value):
 if __name__ == '__main__':
     with open('data.txt', 'r') as f:
         data = [int(x) for x in f.read().split(',')]
-
         p1_data = list(data)
         p1_data[1] = 12
-        p1_data[2] = 2 
+        p1_data[2] = 2
         part1 = run_1202(p1_data)
         print(f'Part 1: {part1[0]}')
         part2 = find_inputs(data, 19690720)
