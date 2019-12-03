@@ -30,6 +30,11 @@ def get_all_coords(instructions):
 
 
 def find_all_intersections(c_list_1, c_list_2):
+    """Get a list of intersecting points.
+
+    Not considering if two lines are on top of eachother.
+
+    """
     intersections = []
     for i in range(0, len(c_list_1)-1):
         c1, c2 = c_list_1[i], c_list_1[i+1]
@@ -72,6 +77,7 @@ def find_all_intersections(c_list_1, c_list_2):
                     continue
     intersections.remove((0,0))
     return intersections
+
 
 def find_steps_to(inter, steps):
     x_int, y_int = inter
