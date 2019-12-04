@@ -19,7 +19,7 @@ def part2_compute(mass):
     total = 0
     while fuel > 0:
         total += fuel
-        fuel = (fuel // 3) - 2
+        fuel = part1_compute(fuel)
     return total
 
 
