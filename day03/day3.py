@@ -10,21 +10,11 @@ def get_data():
 def get_all_coords(instructions):
     coord = (0, 0)
     all_coords = [tuple(coord)]
+    d = ((0, 1), (1, 0), (0, -1), (-1, 0))
     for instr in instructions:
-        coord = tuple(coord)
-        direction = instr[0]
         val = int(instr[1:])
-        x, y = coord
-        if direction == 'U':
-            coord = (x, y+val)
-        elif direction == 'R':
-            coord = (x+val, y)
-        elif direction == 'D':
-            coord = (x, y-val)
-        elif direction == 'L':
-            coord = (x-val, y)
-        else:
-            pass
+        unit = d['URDL'.index(instr[0])]
+        coord = (coord[0] + (unit[0]*val), coord[1] + (unit[1]*val))
         all_coords.append(coord)
     return all_coords
 
@@ -123,6 +113,7 @@ if __name__ == '__main__':
     print(f'Manhattan distance to closest intersection: {sum(map(abs, closest_intersection))}')
 
     steps_to_intersections = [(find_steps_to(inter, c1), find_steps_to(inter, c2)) for inter in intersections]
+    print(steps_to_intersections)
     steps_each = min(steps_to_intersections, key=sum)
     shortest_wire_path = sum(steps_each)
     print(f'Shortest total wire path: {shortest_wire_path}')
