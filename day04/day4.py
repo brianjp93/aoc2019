@@ -1,17 +1,17 @@
 """day4.py
 """
 
+
 VALID_RANGE = (245318, 765747)
 
 def is_valid(num, extra=True):
     num_str = str(num)
-    if len(num_str) == 6:
+    if is_increasing(num):
         if has_same_adj(num, extra=extra):
-            if num >= VALID_RANGE[0] and num <= VALID_RANGE[1]:
-                if is_increasing(num):
-                    return True
+            # if num >= VALID_RANGE[0] and num <= VALID_RANGE[1]:
+                # if len(num_str) == 6:
+            return True
     return False
-
 
 def has_same_adj(num, run_length=2, extra=True):
     num_str = str(num)
@@ -24,10 +24,12 @@ def has_same_adj(num, run_length=2, extra=True):
         if extra:
             if counts[-1][1] >= 2:
                 return True
-    if not extra:
-        for elt in counts:
-            if elt[1] == 2:
+        else:
+            if len(counts) >= 2 and counts[-2][1] == 2:
                 return True
+    if not extra:
+        if counts[-1][1] == 2:
+            return True
     return False
 
 def is_increasing(num):

@@ -1,0 +1,6 @@
+is_increasing = lambda num: all([int(b) >= int(a) for (a, b) in zip(str(num), str(num)[1:])])
+has_adj = lambda num: any(a == b for a, b in zip(str(num), str(num)[1:]))
+has_2 = lambda num: any(str(num).count(c) == 2 for c in str(num))
+nums = range(245318, 765747 + 1)
+print(f'part 1: {len(list(filter(is_increasing, filter(has_adj, nums))))}')
+print(f'Part 2: {len(list(filter(has_2, filter(is_increasing, nums))))}')
