@@ -1,3 +1,7 @@
+"""
+"""
+shortest_manhattan = lambda points: min(points, key=lambda x: abs(x[0]) + abs(x[1]))
+get_intersections = lambda x, y: x.intersection(y)
 
 def get_data(fname):
     with open(fname, 'r') as f:
@@ -16,18 +20,17 @@ def get_point_set(instructions):
     for instr in instructions:
         move, distance = options[instr[0]], int(instr[1:])
         for i in range(distance):
-            coord = (coord[0] + move[0], coord[1] + move[1])
+            coord = tuple([a + b for a, b in zip(coord, move)])
             complete_path.add(coord)
     return complete_path
-
-
-def get_intersections(wire1, wire2):
-    return wire1.intersection(wire2)
 
 
 if __name__ == '__main__':
     wire1, wire2 = get_data('data.txt')
     wire1_set, wire2_set = get_point_set(wire1), get_point_set(wire2)
     intersections = get_intersections(wire1_set, wire2_set)
-    print(intersections)
+    intersections.remove((0, 0))
+    # print(intersections)
     print(f'# intersections: {len(intersections)}')
+    closest_point = shortest_manhattan(intersections)
+    print(f'Shortest Manhattan: {abs(closest_point[0]) + abs(closest_point[1])}')
