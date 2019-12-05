@@ -3,7 +3,7 @@
 import time
 
 def get_data():
-    with open('big.txt', 'r') as f:
+    with open('data.txt', 'r') as f:
         lines = [l.split(',') for l in f]
     return lines
 
