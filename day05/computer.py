@@ -58,13 +58,9 @@ class Computer:
         opcode = int(instr[-2:])
         return opcode
 
-    def get_modes(self):
-        instr = str(self.program[self.i])
-        modes = instr[:-2]
-        return [int(modes[x]) if len(modes)>=abs(x) else 0 for x in [-3, -2, -1]]
-
     def get_vals(self):
-        a, b, c = self.get_modes()
+        modes = str(self.program[self.i])[:-2]
+        a, b, c = [int(modes[x]) if len(modes)>=abs(x) else 0 for x in [-3, -2, -1]]
         x, y, z = [self.program[self.i + t] if self.i+t < len(self.program) else None for t in range(1, 4)]
         val1 = [lambda: self.program[x], lambda: x][c]()
         val2 = [lambda: self.program[y], lambda: y][b]()
