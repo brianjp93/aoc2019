@@ -45,6 +45,7 @@ class Universe:
 
 
 if __name__ == '__main__':
-    universe = Universe('data.txt').find_distance()
+    universe = Universe('data.txt')
+    universe.find_distance()
     print(universe.count_total_orbits())
     print(universe.find_dist_between('YOU', 'SAN'))
