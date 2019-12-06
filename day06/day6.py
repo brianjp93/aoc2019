@@ -9,8 +9,7 @@ class Universe:
         orbits = {}
         with open(fname, 'r') as f:
             for line in f:
-                line = line.strip()
-                m1, m2 = line.split(')')
+                m1, m2 = line.strip().split(')')
                 o = orbits.get(m1, {'(': None, ')': [], 'd': None})
                 o[')'].append(m2)
                 orbits[m1] = o
@@ -45,9 +44,7 @@ class Universe:
                 return len(p1[i+1:]) + len(p2[i+1:])
 
 
-
 if __name__ == '__main__':
-    universe = Universe('data.txt')
-    universe.find_distance()
+    universe = Universe('data.txt').find_distance()
     print(universe.count_total_orbits())
     print(universe.find_dist_between('YOU', 'SAN'))
