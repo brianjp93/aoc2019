@@ -8,7 +8,6 @@ class Computer:
         self.i = 0
         self.output = None
         self.inputs = inputs
-        self.needs_input = False
         self.op = {
             1: {
                 'run': self.add, 'step': 4
@@ -53,7 +52,6 @@ class Computer:
         opcode = self.get_opcode()
         if opcode == 3:
             if len(self.inputs) == 0:
-                self.needs_input = True
                 return 'AWAIT INPUT'
         do_increment = self.op[opcode]['run']()
         if do_increment is None:
