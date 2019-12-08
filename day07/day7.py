@@ -5,15 +5,12 @@ from itertools import permutations
 
 
 def get_highest_signals(data, allowed, run_once=True):
-    max_val = 0
+    max_val = (0, 0)
     max_input = None
     for signal in (''.join(p) for p in permutations(allowed)):
         output = run_with_signal(data, signal, run_once=run_once)
-        if output > max_val:
-            max_val = output
-            max_input = signal
-    return (max_input, max_val)
-
+        max_val = max([max_val, (signal, output)], key=lambda x: x[1])
+    return max_val
 
 def run_with_signal(data, signal, run_once=True):
     e_outputs = []
@@ -30,7 +27,6 @@ def run_with_signal(data, signal, run_once=True):
             if run_once:
                 break
     return server[-1].output
-
 
 if __name__ == '__main__':
     with open('data.txt', 'r') as f:
