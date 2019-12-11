@@ -1,14 +1,6 @@
 """day10.py
 """
 from math import atan2, sqrt, pi
-from sympy import Rational
-
-def find_slope(start, end):
-    num = end[1] - start[1]
-    den = end[0] - start[0]
-    slope = Rational(num, den) if den != 0 else 'und'
-    angle = get_angle(start, end)
-    return slope, angle
 
 def get_angle(start, end):
     y = end[1] - start[1]
@@ -23,7 +15,7 @@ def get_slopes_for(data, coord):
     for y in range(len(data)):
         for x in range(len(data[y])):
             if (x, y) != coord and data[y][x] == '#':
-                key = find_slope(coord, (x, y))
+                key = get_angle(coord, (x, y))
                 dist = get_distance(coord, (x, y))
                 slopes[key] = slopes.get(key, [])
                 slopes[key].append(((x, y), dist))
@@ -51,7 +43,7 @@ def most_visible_asteroids(data):
 def get_vaporization_order(data):
     asteroid_count = sum(line.count('#') for line in data)
     slopes = get_slopes_for(data, best)
-    slopes = [(x[1], y) for x, y in slopes.items()]
+    slopes = [(x, y) for x, y in slopes.items()]
     slopes.sort(key=lambda x: x[0])
 
     asteroids = [x[1] for x in slopes]
