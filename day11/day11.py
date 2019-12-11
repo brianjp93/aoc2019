@@ -44,15 +44,21 @@ class HullPaintingRobot:
         # move our current location
         self.current = tuple(a+b for a, b in zip(self.current, self.move[self.facing]))
 
-    def draw(self):
-        max_x = max(self.matrix.keys(), key=lambda x: x[0])[0]
-        min_x = min(self.matrix.keys(), key=lambda x: x[0])[0]
-        max_y = max(self.matrix.keys(), key=lambda x: x[1])[1]
-        min_y = min(self.matrix.keys(), key=lambda x: x[1])[1]
+    def draw(self, x_range=None, y_range=None, with_ant=False):
+        if x_range is None:
+            max_x = max(self.matrix.keys(), key=lambda x: x[0])[0]
+            min_x = min(self.matrix.keys(), key=lambda x: x[0])[0]
+        else:
+            min_x, max_x = x_range
+        if y_range is None:
+            max_y = max(self.matrix.keys(), key=lambda x: x[1])[1]
+            min_y = min(self.matrix.keys(), key=lambda x: x[1])[1]
+        else:
+            min_y, max_y = y_range
+        out = ''
         for y in reversed(range(min_y, max_y+1)):
-            for x in range(min_x, max_x+1):
-                print(self.matrix.get((x, y), ' '), end='')
-            print()
+            out += ''.join(self.matrix.get((x, y), ' ') if self.current != (x, y) or not with_ant else self.facing for x in range(min_x, max_x+1)) + '\n'
+        return out
 
 
 def run_robot(data, start_input):
@@ -81,4 +87,4 @@ if __name__ == '__main__':
         print()
         robot = run_robot(list(data), 1)
         print('v LICENSE v')
-        robot.draw()
+        print(robot.draw())
