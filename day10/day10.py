@@ -10,20 +10,19 @@ def get_angle(start, end):
         angle = (2*pi) + angle
     return angle 
 
-def get_slopes_for(data, coord):
-    slopes = {}
+def get_angles_for(data, coord):
+    angles = {}
     for y in range(len(data)):
         for x in range(len(data[y])):
             if (x, y) != coord and data[y][x] == '#':
                 key = get_angle(coord, (x, y))
                 dist = get_distance(coord, (x, y))
-                slopes[key] = slopes.get(key, [])
-                slopes[key].append(((x, y), dist))
-    return slopes
+                angles[key] = angles.get(key, [])
+                angles[key].append(((x, y), dist))
+    return angles
 
 def get_distance(start, end):
-    x = end[0] - start[0]
-    y = end[1] - start[1]
+    x, y = (end[a] - start[a] for a in [0, 1])
     return sqrt(x**2 + y**2)
 
 def count_all(data):
@@ -31,8 +30,8 @@ def count_all(data):
     for y in range(len(data)):
         for x in range(len(data[y])):
             if data[y][x] == '#':
-                slopes = get_slopes_for(data, (x, y))
-                counts[(x, y)] = len(slopes.keys())
+                angles = get_angles_for(data, (x, y))
+                counts[(x, y)] = len(angles.keys())
     return counts
 
 def most_visible_asteroids(data):
@@ -42,11 +41,11 @@ def most_visible_asteroids(data):
 
 def get_vaporization_order(data):
     asteroid_count = sum(line.count('#') for line in data)
-    slopes = get_slopes_for(data, best)
-    slopes = [(x, y) for x, y in slopes.items()]
-    slopes.sort(key=lambda x: x[0])
+    angles = get_angles_for(data, best)
+    angles = [(x, y) for x, y in angles.items()]
+    angles.sort(key=lambda x: x[0])
 
-    asteroids = [x[1] for x in slopes]
+    asteroids = [x[1] for x in angles]
     for points in asteroids:
         points.sort(key=lambda x: x[1])
 
@@ -57,7 +56,6 @@ def get_vaporization_order(data):
                 continue
             point = point_list.pop(0)
             vaporized.append(point[0])
-    
     return vaporized
 
 if __name__ == '__main__':
