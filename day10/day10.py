@@ -1,11 +1,12 @@
 """day10.py
 """
 from math import atan2, sqrt, pi
+from sympy import Rational
 
 def find_slope(start, end):
     num = end[1] - start[1]
     den = end[0] - start[0]
-    slope = num / den if den != 0 else 'und'
+    slope = Rational(num, den) if den != 0 else 'und'
     angle = get_angle(start, end)
     return slope, angle
 
