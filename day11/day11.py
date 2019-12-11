@@ -19,6 +19,13 @@ class HullPaintingRobot:
         return self.matrix.get(coord, '.')
 
     def current_color(self):
+        """
+
+        Returns
+        -------
+        0 if black, 1 if white
+
+        """
         return 0 if self.get(self.current) == '.' else 1
 
     def paint(self, color):
@@ -26,11 +33,15 @@ class HullPaintingRobot:
 
     def command(self, c1, c2):
         self.paint('#' if int(c1) else '.')
+
+        # face our new direction
         facing_index = self.directions.index(self.facing)
         facing_index = facing_index + 1 if int(c2) else facing_index - 1
         if facing_index >= len(self.directions):
             facing_index = facing_index % 4
         self.facing = self.directions[facing_index]
+
+        # move our current location
         self.current = tuple(a+b for a, b in zip(self.current, self.move[self.facing]))
 
     def draw(self):
@@ -49,7 +60,7 @@ def run_robot(data, start_input):
     comp = Computer(list(data), inputs=[start_input])
     output = None
     last_index = 0
-    while output != 'HALT':
+    while True:
         output = comp.run()
         new_outputs = comp.output[last_index:]
         last_index = len(comp.output)
