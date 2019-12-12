@@ -123,38 +123,6 @@ class BodySystem:
         return self.dump_x(), self.dump_y(), self.dump_z()
 
 
-def get_dim_cycles(system):
-    step = 0
-    initial_state = system.dumps()
-
-    dimensions = [set() for _ in range(3)]
-    cycle = [False for _ in range(3)]
-    states = []
-
-    while True:
-        if step % 100_000 == 0:
-            end = time.time()
-            print(f'STEP: {step:10,} in {(end - start):.2f}')
-
-        dim_dump = system.dump_dims()
-        for i in range(3):
-            if cycle[i]:
-                continue
-            else:
-                if dim_dump[i] in dimensions[i]:
-                    cycle[i] = step
-                else:
-                    dimensions[i].add(dim_dump[i])
-                    states.append(system.dumps())
-
-        if all(cycle):
-            least_common_multiple = lcm.reduce(cycle, dtype='int64')
-            break
-        system.step()
-        step += 1
-    return least_common_multiple, cycle
-
-
 with open('data.txt', 'r') as f:
     moons = []
     for line in f:
