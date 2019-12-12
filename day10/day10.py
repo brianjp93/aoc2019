@@ -2,6 +2,7 @@
 """
 from math import atan2, sqrt, pi
 
+
 def get_angle(start, end):
     y = end[1] - start[1]
     x = end[0] - start[0]
@@ -16,14 +17,10 @@ def get_angles_for(data, coord):
         for x in range(len(data[y])):
             if (x, y) != coord and data[y][x] == '#':
                 key = get_angle(coord, (x, y))
-                dist = get_distance(coord, (x, y))
+                manhattan_dist = sum(abs((x, y)[a] - coord[a]) for a in [0, 1])
                 angles[key] = angles.get(key, [])
-                angles[key].append(((x, y), dist))
+                angles[key].append(((x, y), manhattan_dist))
     return angles
-
-def get_distance(start, end):
-    x, y = (end[a] - start[a] for a in [0, 1])
-    return sqrt(x**2 + y**2)
 
 def count_all(data):
     counts = {}
