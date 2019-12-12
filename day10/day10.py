@@ -12,6 +12,19 @@ def get_angle(start, end):
     return angle 
 
 def get_angles_for(data, coord):
+    """
+
+    Returns
+    -------
+    dict
+        key : angles in radians
+        value : [((coord -> tuple), manhattan_distance -> int)]
+        Ex: {
+            angle : [((x, y), manhattan_dist), ...],
+            ...
+        }
+
+    """
     angles = {}
     for y in range(len(data)):
         for x in range(len(data[y])):
