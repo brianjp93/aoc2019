@@ -7,7 +7,7 @@ import time
 convert = [' ', '|', '█', '-', 'o']
 
 def count_blocks(data):
-    return [x for x in parts.values()].count(2)
+    return [x for x in data.values()].count(2)
 
 def get_parts(data):
     out = {}
@@ -30,10 +30,15 @@ def draw(dict_data):
         out.append(''.join([convert[dict_data.get((x, y), 0)] for x in range(45)]) + '\n')
     return ''.join(out)
 
+def get_init_blocks(data):
+    comp = Computer(data, inputs=[])
+    comp.run()
+    output = comp.output
+    parts = get_parts(output)['parts']
+    blocks = count_blocks(parts)
+    return blocks
 
-with open('data.txt', 'r') as f:
-    data = list(map(int, f.read().split(',')))
-    data[0] = 2
+def win_game(data):
     comp = Computer(data, inputs=[])
 
     blocks = None
@@ -41,7 +46,6 @@ with open('data.txt', 'r') as f:
     ball = None
     paddle = None
 
-    loop = 0
     while blocks != 0:
         comp.run()
         output = comp.output
@@ -52,12 +56,12 @@ with open('data.txt', 'r') as f:
         # print(f'paddle {paddle}')
         parts.update(newparts['parts'])
         blocks = count_blocks(parts)
-        if loop == 0:
-            print(f'Blocks Init: {blocks}.')
         comp.output = []
 
-        # print(draw(parts))
+        display = draw(parts)
         score = parts.get((-1, 0), 0)
+        display = f'{display}\n\nScore: {score}'
+        # print(display)
 
         if paddle[0] > ball[0]:
             move = -1
@@ -66,6 +70,16 @@ with open('data.txt', 'r') as f:
         else:
             move = 0
         comp.inputs = [move]
-        loop += 1
-    
-    print(f'Score: {score}')
+        # time.sleep(.05)
+    return score
+
+
+with open('data.txt', 'r') as f:
+    data = list(map(int, f.read().split(',')))
+
+    blocks = get_init_blocks(list(data))
+    print(f'Init Blocks: {blocks}')
+
+    data[0] = 2
+    score = win_game(list(data))
+    print(f'End Score: {score}')
