@@ -31,8 +31,6 @@ def draw(dict_data):
     return ''.join(out)
 
 
-
-
 with open('data.txt', 'r') as f:
     data = list(map(int, f.read().split(',')))
     data[0] = 2
