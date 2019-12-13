@@ -11,6 +11,12 @@ class Moon:
         self.pos = [x, y, z]
         self.vel = [0, 0, 0]
 
+    def __str__(self):
+        return f'<POS x={self.pos[0]}, y={self.pos[1]}, z={self.pos[2]}: VEL x={self.vel[0]}, y={self.vel[1]}, z={self.vel[2]}>'
+
+    def __repr__(self):
+        return self.__str__()
+
     def reset(self):
         self.pos = list(self.init_pos)
         self.vel = list(self.init_vel)
@@ -48,6 +54,7 @@ class BodySystem:
                 print(f'STEP: {step:10,} in {(end - start):.2f}')
 
             dim_dump = self.dump_dims()
+            states.append(dim_dump)
             for i in range(3):
                 if cycle[i]:
                     continue
@@ -56,7 +63,6 @@ class BodySystem:
                         cycle[i] = step
                     else:
                         dimensions[i].add(dim_dump[i])
-                        states.append(self.dump_dims())
 
             if all(cycle):
                 least_common_multiple = lcm.reduce(cycle, dtype='int64')
@@ -66,6 +72,21 @@ class BodySystem:
 
         self._repeat_step = least_common_multiple
         self._states = states
+        self._cycles = cycle
+
+    def go(self, step=0):
+        """Uses cached data to calculate state at any step.
+        """
+        cycles = self.get_cycles()
+        all_states = self.get_all_states()
+        state_indexes = [step % i_cycle for i_cycle in cycles]
+        states = [all_states[state_index] for state_index in state_indexes]
+
+        for i, dim in enumerate(states):
+            dim_vals = list(map(int, dim[i].split(',')))
+            for body_index, j in enumerate(range(0, len(dim_vals), 2)):
+                self.bodies[body_index].pos[i] = dim_vals[j]
+                self.bodies[body_index].vel[i] = dim_vals[j+1]
 
     def get_repeat_step(self):
         if self._repeat_step is None:
@@ -76,6 +97,11 @@ class BodySystem:
         if self._cycles is None:
             self._calculate_all_states()
         return self._cycles
+
+    def get_all_states(self):
+        if self._states is None:
+            self._calculate_all_states()
+        return self._states
 
     def reset(self):
         for body in self.bodies:
@@ -134,7 +160,7 @@ with open('data.txt', 'r') as f:
 
     system = BodySystem(bodies=list(moons))
     steps = 1000
-    system.step_for(1000)
+    system.go(1000)
     print(f'Energy after {steps} steps: {system.energy()}')
 
     system.reset()
