@@ -15,14 +15,14 @@ class RepairDroid(Computer):
             4: 3,
         }
         self.map = {}
-        self.responses = '#.o'
+        self.responses = '# o'
         super().__init__(*args, **kwargs)
 
     def move(self, i):
         self.inputs = [i]
         self.run()
         response = self.output[-1]
-        check_location = (self.moves[i][0] + self.current[0], self.moves[i][1] + self.current[1])
+        check_location = tuple(a+b for a, b in zip(self.moves[i], self.current))
         if response == 2:
             self.destination = check_location
         self.map[check_location] = [self.responses[response], None]
@@ -31,9 +31,8 @@ class RepairDroid(Computer):
         return response
 
     def draw(self):
-        # time.sleep(.015)
+        time.sleep(.015)
         keys = self.map.keys()
-        # min_x = 
         # min_x, max_x, min_y, max_y = -21, 19, -19, 21
         min_x = min(keys, key=lambda x: x[0])[0]
         min_y = min(keys, key=lambda x: x[1])[1]
@@ -78,10 +77,10 @@ if __name__ == '__main__':
         
         droid = RepairDroid(data)
         droid.explore(2, draw=False)
-        print(droid.draw())
+        # print(droid.draw())
         droid.get_dist((0, 0), 0)
-        print(droid.map[droid.destination])
+        print(f'Distance to destination: {droid.map[droid.destination]}')
 
         droid.get_dist(droid.destination, 0)
         vals = [x[1] for x in droid.map.values() if x[1] is not None]
-        print(max(vals))
+        print(f'Distance to furthest part of room: {max(vals)}')
