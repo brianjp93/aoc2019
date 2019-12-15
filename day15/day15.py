@@ -18,12 +18,6 @@ class RepairDroid(Computer):
         self.responses = '#.o'
         super().__init__(*args, **kwargs)
 
-    def check_surroundings(self):
-        for i in range(1, 5):
-            response = self.move(i)
-            if response in [1, 2]:
-                self.move(self.opposite_move[i])
-
     def move(self, i):
         self.inputs = [i]
         self.run()
