@@ -31,7 +31,7 @@ class RepairDroid(Computer):
         return response
 
     def draw(self):
-        time.sleep(.015)
+        # time.sleep(.015)
         keys = self.map.keys()
         # min_x, max_x, min_y, max_y = -21, 19, -19, 21
         min_x = min(keys, key=lambda x: x[0])[0]
