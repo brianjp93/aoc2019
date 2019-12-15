@@ -63,7 +63,7 @@ class NanoFactory:
             else:
                 # Got lucky and hit an exact value
                 return check
-        return check
+        return lower
 
 if __name__ == '__main__':
     factory = NanoFactory('data.txt')
