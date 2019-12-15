@@ -68,7 +68,7 @@ class NanoFactory:
 if __name__ == '__main__':
     factory = NanoFactory('data.txt')
 
-    ore = factory.ore_per_product(amount=3400000)
+    ore = factory.ore_per_product(amount=1)
     print(f'Need {ore:,} ore for 1 fuel.')
 
     fuel_with_ore = factory.fuel_with_ore(1_000_000_000_000)
