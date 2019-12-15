@@ -1,6 +1,7 @@
 """day15.py
 """
 from computer import Computer
+import time
 
 
 class RepairDroid(Computer):
@@ -36,7 +37,10 @@ class RepairDroid(Computer):
         return response
 
     def draw(self):
+        # time.sleep(.015)
         keys = self.map.keys()
+        # min_x = 
+        # min_x, max_x, min_y, max_y = -21, 19, -19, 21
         min_x = min(keys, key=lambda x: x[0])[0]
         min_y = min(keys, key=lambda x: x[1])[1]
         max_x = max(keys, key=lambda x: x[0])[0]
@@ -87,4 +91,3 @@ if __name__ == '__main__':
         droid.get_dist(droid.destination, 0)
         vals = [x[1] for x in droid.map.values() if x[1] is not None]
         print(max(vals))
-        # print(droid.map)
