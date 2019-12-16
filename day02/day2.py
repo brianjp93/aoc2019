@@ -19,8 +19,7 @@ def find_inputs(data, value):
     for i in range(100):
         for j in range(100):
             d = list(data)
-            d[1] = i
-            d[2] = j
+            d[1], d[2] = i, j
             output = run_1202(d)
             if output[0] == value:
                 return [i, j]
