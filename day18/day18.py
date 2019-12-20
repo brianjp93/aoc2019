@@ -365,52 +365,6 @@ class Robit:
         self.distance_to_keys[dictkey] = (out, new_path)
         return out, new_path
 
-
-    # def find_shortest(self):
-    #     all_keys = self.keys.keys()
-    #     shortest = 10000000000000
-    #     shortest_path = ''
-    #     groups = self.get_conditions()
-
-    #     paths = [(['@'], list(groups), 0)]
-
-    #     # [[['g', 'i'], ['b']], [['a'], ['g']], [['b'], ['h']], [['c'], ['i']]]
-    #     while paths:
-    #         # time.sleep(.1)
-    #         path, groups, dist = paths.pop(0)
-    #         not_allowed = []
-    #         for g in groups:
-    #             for l in g[0]:
-    #                 if l not in path:
-    #                     not_allowed.append(''.join(g[1]))
-    #         not_allowed = ''.join(not_allowed)
-    #         # print(groups)
-    #         # print(not_allowed)
-    #         allowed = [x for x in all_keys if not x in not_allowed and not x in path]
-    #         # print(f'Allowed: {allowed}')
-    #         print(f'looking at path {path}')
-    #         if len(path) == self.key_count + 1:
-    #             if dist < shortest:
-    #                 shortest_path = ''.join(path)
-    #                 shortest = dist
-    #                 print(f'Found shorter path {shortest_path}')
-    #         else:
-    #             node = self.nodes[path[-1]]
-    #             # print(node.sorted())
-    #             # print(any_order)
-    #             # print(groups)
-    #             next_nodes = [n for n in node.sorted() if n[0].name in allowed]
-    #             # print(next_nodes)
-    #             for next_node, _ in next_nodes[:4]:
-    #                 c = next_node.name
-    #                 next_dist = node[c]
-    #                 # new_groups = list(g[:][:] for g in list(groups))
-    #                 # print(new_groups)
-    #                 new_path = list(path)
-    #                 new_path.append(c)
-    #                 paths.append((new_path, groups, dist+next_dist))
-    #     return shortest, shortest_path
-
 def get_robit():
     with open('data.txt', 'r') as f:
         data = [[x for x in line.strip()] for line in f]
