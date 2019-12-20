@@ -1,7 +1,64 @@
 """day18.py
+
+not clever enough
+This is doing many searches and it is too slow.
+When there are 26 keys, we have maybe 26 factorial
+path options.
+
 """
+import time
+import networkx as nx
+import matplotlib.pyplot as plt
 
 LETTERS = 'abcdefghijklmnopqrstuvwxyz'
+
+
+class Node:
+    def __init__(self, name):
+        self.name = name
+        self.connected = {}
+        self.lt_set = set()
+        self.gt_set = set()
+
+    def __repr__(self):
+        return f'{self.name}'
+
+    def __getitem__(self, node):
+        return self.connected[node][1]
+
+    def __iter__(self):
+        for item in self.connected.values():
+            yield item
+
+    def __lt__(self, node):
+        tocheck = [node]
+        while tocheck:
+            lt_node = tocheck.pop()
+            if self in lt_node.lt_set:
+                return True
+            else:
+                tocheck += [x for x in lt_node.lt_set]
+        return False
+
+    def sorted(self):
+        return sorted([n for n in self.connected.values()], key=lambda x: x[1])
+
+    def connect(self, node, distance):
+        self.connected[node.name] = (node, distance)
+        node.connected[self.name] = (self, distance)
+
+    def remove(self, node):
+        if node.name in self.connected:
+            del self.connected[node.name]
+        if self.name in node.connected:
+            del node.connected[self.name]
+
+    def force_lt(self, node):
+        self.lt_set.add(node)
+        node.gt_set.add(self)
+
+    def force_gt(self, node):
+        pass
 
 class Robit:
     def __init__(self, data):
@@ -17,8 +74,9 @@ class Robit:
             (0, 1)
         )
         self.maze = {}
-        self.open_maze = {}
-        self.distance_from = {}
+        self.nodes = {}
+        self.distance_to_keys = {} 
+        self.conditions = None
 
     def get_start(self):
         for y, line in enumerate(self.data):
@@ -35,7 +93,6 @@ class Robit:
                     self.keys[ch] = x,y
                     count += 1
         return count
-
 
     def explore(self, start, dist, with_keys=[]):
         # (pos, distance, (doors))
@@ -76,44 +133,301 @@ class Robit:
                 q.append((npos, dist+1))
         return maze
 
-    def valid_paths(self):
-        key_list = self.keys.keys()
-        
-        valid = []
-        q = [('origin', [], 0)]
-        valid_count = 0
-        shortest = 100000000
-        invalid = set()
-        while q:
-            check, prev, dist = q.pop()
-            if dist > shortest:
-                print(f'Distance {dist} was greater than shortest: {shortest}')
-                continue
-            elif len(prev) == self.key_count:
-                # print(f'Found valid path {"".join(prev)}')
-                valid.append(''.join(prev))
-                valid_count += 1
-                shortest = min((shortest, dist))
-                print(shortest)
-                if valid_count % 10_000 == 0:
-                    print(prev)
-                    print(f'Valid Count: {valid_count:,}')
-                continue
+    def get_nodes(self):
+        """get all distances between origin and every key.
+
+        Assume we have every key
+
+        """
+        keys = self.keys.keys()
+
+        self.nodes['@'] = Node('@')
+        for key in keys:
+            self.nodes[key] = Node(key)
+
+        maze = self.explore(self.start, 0, with_keys=keys)
+        for c, pos in self.keys.items():
+            self.nodes['@'].connect(self.nodes[c], maze[pos])
+
+        for key, key_pos in self.keys.items():
+            maze = self.explore(key_pos, 0, with_keys=keys)
+            for otherkey, pos in self.keys.items():
+                if key != otherkey:
+                    self.nodes[key].connect(self.nodes[otherkey], maze[pos])
+
+    def get_graph(self):
+        keys = self.keys.keys()
+        graph = nx.Graph()
+
+        graph.add_nodes_from(keys)
+
+        maze = self.explore(self.start, 0, with_keys=keys)
+        for c, pos in self.keys.items():
+            dist = maze[pos]
+            graph.add_edge('@', c, weight=dist)
+
+        for i, (key, key_pos) in enumerate(list(self.keys.items())[:-1]):
+            maze = self.explore(key_pos, 0, with_keys=keys)
+            for otherkey, pos in list(self.keys.items())[i+1:]:
+                if key != otherkey:
+                    dist = maze[pos]
+                    graph.add_edge(key, otherkey, weight=dist)
+
+        self.graph = graph
+
+    def draw_graph(self):
+        self.get_graph()
+        nx.draw_shell(self.graph, with_labels=True, font_weight='bold')
+        plt.show()
+
+    def get_path(self, key, maze=None, start=None):
+        start = start if start else self.start
+        if maze is None:
+            maze = self.explore(start, 0, with_keys=self.keys.keys())
+        end = self.keys[key]
+        path = [end]
+        doors = []
+        through_keys = []
+
+        pos = end
+        dist = maze[pos]
+        while pos != start:
+            for i in range(4):
+                newpos = tuple(a+b for a, b in zip(self.moves[i], pos))
+                if maze.get(newpos, None) == dist-1:
+                    pos = newpos
+                    dist = maze[pos]
+                    path.append(pos)
+                    c = self.data[pos[1]][pos[0]]
+                    if c in LETTERS.upper():
+                        doors.append(c)
+                    elif c in LETTERS.lower():
+                        if c != key:
+                            through_keys.append(c)
+                    break
+        path, doors, through_keys = list(reversed(path)), list(reversed(doors)), list(reversed(through_keys))
+        return path, doors, through_keys
+
+    def draw_path(self, path):
+        """
+        """
+        have_keys = []
+        paths = set()
+        total = 0
+        for a,b in zip(path, path[1:]):
+            print(f'getting path between {a} and {b}')
+            if a == '@':
+                path, doors, _ = self.get_path(b, start=None)
             else:
-                explore_start = self.keys.get(check, self.start)
-                maze = self.explore(explore_start, dist, with_keys=prev)
-                next_check = (key for key in key_list if key not in prev)
-                for key in next_check:
-                    if self.keys[key] in maze:
-                        if not maze[self.keys[key]] >= shortest:
-                            q.append((key, prev + [key], maze[self.keys[key]]))
-        return valid
+                path, doors, _ = self.get_path(b, start=self.keys[a])
+            total += len(path)
+            for door in doors:
+                if not door.lower() in have_keys:
+                    print('INVALID PATH')
+                    print(f'Cannot go through {door} yet.')
+            have_keys.append(b)
+            paths = paths | set(path)
+
+        convert = {
+            '.': ' ',
+            '#': '■'
+        }
+        out = []
+        print(paths)
+        for y, line in enumerate(self.data):
+            l = []
+            for x, c in enumerate(line):
+                if c in LETTERS:
+                    pass
+                else:
+                    c = convert.get(c, c)
+                    if (x, y) in paths:
+                        c = '*'
+                l.append(c)
+            out.append(''.join(l))
+        out = '\n'.join(out)
+        print(out)
+        print(total)
+        return out
+
+    def get_conditions(self):
+        maze = self.explore(self.start, 0, with_keys=self.keys.keys())
+
+        explicit = []
+        equalities = []
+        for key, pos in self.keys.items():
+            path, doors, through_keys = self.get_path(key)
+            for kbefore in through_keys:
+                explicit.append(kbefore)
+                explicit.append(key)
+                equalities.append([[kbefore], [key]])
+            for door in doors:
+                c = door.lower()
+                print(f'{c} before {key}')
+                self.nodes[key].force_lt(self.nodes[c])
+                explicit.append(c)
+                explicit.append(key)
+
+                found = False
+                equalities.append([[c], [key]])
+
+        nodes = [n for n in self.nodes.values() if n.name in explicit]
+        nodes.sort()
+        top = self.nodes['@']
+        # groups = [[nodes[0].name]]
+        # for n1, n2 in zip(nodes, nodes[1:]):
+        #     print(n1 < n2)
+        #     if (n1 < n2):
+        #         groups.append([n2.name])
+        #     else:
+        #         groups[-1].append(n2.name)
+        # any_order = [n for n in self.keys.keys() if n not in explicit]
+
+        print(equalities)
+        # print(groups)
+        # print(any_order)
+
+        # print(top['g'] < top['b'])
+        # print(top['b'] < top['g'])
+        # print(top['c'] < top['b'])
+        # return groups, any_order
+        self.conditions = equalities
+        return equalities
+
+    def find_shortest(self, key='@', keys_needed=None, p='', not_allowed=None):
+        """
+        """
+        # print(f'Checking key {key} and keys_needed {keys_needed}')
+        if keys_needed is None:
+            keys_needed = set(self.keys.keys())
+        if not keys_needed:
+            return 0, key
+
+        dictkey = (key, tuple(sorted(list(keys_needed))))
+        cached = self.distance_to_keys.get(dictkey, None)
+        if cached:
+            return cached
+
+        # get condition
+        if not self.conditions:
+            self.get_conditions()
+
+        if not_allowed is None:
+            not_allowed = {x[1][0] for x in self.conditions if x[0][0] in keys_needed}
+
+        # print(not_allowed)
+
+        out = 10000000
+        new_path = None
+        for next_key in keys_needed:
+            if next_key not in not_allowed:
+                nshort = self.find_shortest(key=next_key, keys_needed=keys_needed - set(next_key), p=p+next_key)
+                d = self.nodes[key][next_key] + nshort[0]
+                if d < out:
+                    out = d
+                    new_path = nshort[1] + next_key
+                    # print(f'found shorter path with key {key} and next {next_key}')
+                else:
+                    pass
+
+        self.distance_to_keys[dictkey] = (out, new_path)
+        return out, new_path
 
 
-if __name__ == '__main__':
-    with open('test.txt', 'r') as f:
+    def find_shortest_no_doors(self, key='@', keys_needed=None, p=''):
+        """
+        """
+        # print(f'Checking key {key} and keys_needed {keys_needed}')
+        if keys_needed is None:
+            keys_needed = set(self.keys.keys())
+        if not keys_needed:
+            return 0, key
+
+        dictkey = (key, tuple(sorted(list(keys_needed))))
+        cached = self.distance_to_keys.get(dictkey, None)
+        if cached:
+            return cached
+
+        # print(not_allowed)
+
+        out = 10000000
+        new_path = None
+        for next_key in keys_needed:
+            nshort = self.find_shortest(key=next_key, keys_needed=keys_needed - set(next_key), p=p+next_key)
+            d = self.nodes[key][next_key] + nshort[0]
+            if d < out:
+                out = d
+                new_path = nshort[1] + next_key
+                # print(f'found shorter path with key {key} and next {next_key}')
+            else:
+                pass
+
+        self.distance_to_keys[dictkey] = (out, new_path)
+        return out, new_path
+
+
+    # def find_shortest(self):
+    #     all_keys = self.keys.keys()
+    #     shortest = 10000000000000
+    #     shortest_path = ''
+    #     groups = self.get_conditions()
+
+    #     paths = [(['@'], list(groups), 0)]
+
+    #     # [[['g', 'i'], ['b']], [['a'], ['g']], [['b'], ['h']], [['c'], ['i']]]
+    #     while paths:
+    #         # time.sleep(.1)
+    #         path, groups, dist = paths.pop(0)
+    #         not_allowed = []
+    #         for g in groups:
+    #             for l in g[0]:
+    #                 if l not in path:
+    #                     not_allowed.append(''.join(g[1]))
+    #         not_allowed = ''.join(not_allowed)
+    #         # print(groups)
+    #         # print(not_allowed)
+    #         allowed = [x for x in all_keys if not x in not_allowed and not x in path]
+    #         # print(f'Allowed: {allowed}')
+    #         print(f'looking at path {path}')
+    #         if len(path) == self.key_count + 1:
+    #             if dist < shortest:
+    #                 shortest_path = ''.join(path)
+    #                 shortest = dist
+    #                 print(f'Found shorter path {shortest_path}')
+    #         else:
+    #             node = self.nodes[path[-1]]
+    #             # print(node.sorted())
+    #             # print(any_order)
+    #             # print(groups)
+    #             next_nodes = [n for n in node.sorted() if n[0].name in allowed]
+    #             # print(next_nodes)
+    #             for next_node, _ in next_nodes[:4]:
+    #                 c = next_node.name
+    #                 next_dist = node[c]
+    #                 # new_groups = list(g[:][:] for g in list(groups))
+    #                 # print(new_groups)
+    #                 new_path = list(path)
+    #                 new_path.append(c)
+    #                 paths.append((new_path, groups, dist+next_dist))
+    #     return shortest, shortest_path
+
+def get_robit():
+    with open('data.txt', 'r') as f:
         data = [[x for x in line.strip()] for line in f]
         # print(data)
+
+        start = time.time()
+
+        robit = Robit(data)
+        robit.get_nodes()
+    return robit
+
+if __name__ == '__main__':
+    with open('data.txt', 'r') as f:
+        data = [[x for x in line.strip()] for line in f]
+        # print(data)
+
+        start = time.time()
 
         robit = Robit(data)
         print(f'Keys: {robit.key_count}')
@@ -122,7 +436,6 @@ if __name__ == '__main__':
 
         # maze = robit.explore(robit.start, 0, with_keys=['a'])
         # print(maze)
-        # robit.explore_from_keys()
         # print('found all paths')
         # for key, value in maze.items():
             # print(key, value)
@@ -130,5 +443,67 @@ if __name__ == '__main__':
 
         # print(maze.get(robit.keys['b']))
 
-        valid = robit.valid_paths()
-        print(valid)
+        # valid = robit.valid_paths()
+        # print(valid)
+
+        robit.get_nodes()
+        print(robit.nodes['@'].sorted())
+        # for node in robit.nodes['@']:
+        #     print(node)
+
+        # for node in robit.nodes['a']:
+        #     print(node)
+
+        # print(robit.find_doors_between('b'))
+        # robit.get_conditions()
+
+        # possible path - only checking first two closest
+        # @hmqdjytlxsbewgcrunovpkfaiz
+
+        # shortest, path = robit.find_shortest()
+        # print(f'Shortest Path: {path}')
+        # print(f'Path Length: {shortest}')
+        # for a,b in zip(path, path[1:]):
+        #     n1 = robit.nodes[a]
+        #     # n2 = robit.nodes[b]
+        #     print(n1[b])
+
+        distance = robit.find_shortest()
+        print(distance)
+
+        # path = '@deacfigbh'
+        # path = '@hmqdjytlxsbewgcrunovpkfaiz'
+        # robit.draw_path(path)
+
+
+
+        end = time.time()
+        print(f'Total time: {(end-start):.02f} seconds.')
+
+
+    with open('data1.txt', 'r') as f:
+        data = [[x for x in line.strip()] for line in f]
+        robit = Robit(data)
+        robit.get_nodes()
+        out1 = robit.find_shortest_no_doors()
+
+    with open('data2.txt', 'r') as f:
+        data = [[x for x in line.strip()] for line in f]
+        robit = Robit(data)
+        robit.get_nodes()
+        out2 = robit.find_shortest_no_doors()
+
+    with open('data3.txt', 'r') as f:
+        data = [[x for x in line.strip()] for line in f]
+        robit = Robit(data)
+        robit.get_nodes()
+        out3 = robit.find_shortest_no_doors()
+
+    with open('data4.txt', 'r') as f:
+        data = [[x for x in line.strip()] for line in f]
+        robit = Robit(data)
+        robit.get_nodes()
+        out4 = robit.find_shortest_no_doors()
+
+    print(out1, out2, out3, out4)
+    print(out1[0] + out2[0] + out3[0] + out4[0])

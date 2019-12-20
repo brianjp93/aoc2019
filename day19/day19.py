@@ -1,4 +1,8 @@
 """day19.py
+
+I got the answer with this code but it's gross and I don't know
+how to do it elegantly.
+
 """
 from computer import Computer
 
