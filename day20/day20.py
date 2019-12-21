@@ -99,7 +99,7 @@ class PortalMaze:
         maze = {}
         q = [(start, dist)]
         while q:
-            pos, dist = q.pop()
+            pos, dist = q.pop(0)
             ch = self.map.get(pos, None)
             if ch in ' #':
                 continue
@@ -117,7 +117,7 @@ class PortalMaze:
     def explore(self, start, dist):
         q = [(start, dist)]
         while q:
-            pos, dist = q.pop()
+            pos, dist = q.pop(0)
             ch = self.map.get(pos, None)
             if ch in ' #':
                 continue
@@ -130,6 +130,8 @@ class PortalMaze:
                     odist = self.mapd.get(pos, float('inf'))
                     if dist < odist:
                         self.mapd[pos] = dist
+                        if pos == self.end:
+                            break
                         for move in self.moves:
                             npos = tuple(a+b for a,b in zip(move, pos))
                             q.append((npos, dist+1))
@@ -142,14 +144,12 @@ class PortalMaze:
 
 
 class PortalMazeRecursive(PortalMaze):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-    def explore(self, start, layer, dist, limit=25):
+    def explore(self, start, layer, dist):
         q = [(start, layer, dist)]
         while q:
-            pos, layer, dist = q.pop()
-            if layer > limit or layer < 0:
+            pos, layer, dist = q.pop(0)
+            if layer < 0:
                 continue
             ch = self.map.get(pos, None)
             if ch in ' #':
@@ -168,6 +168,8 @@ class PortalMazeRecursive(PortalMaze):
                     odist = self.mapd.get(lpos, float('inf'))
                     if dist < odist:
                         self.mapd[lpos] = dist
+                        if lpos == self.end:
+                            break
                         for move in self.moves:
                             npos = tuple(a+b for a,b in zip(move, pos))
                             q.append((npos, layer, dist+1))
@@ -188,7 +190,8 @@ if __name__ == '__main__':
 
     # Part 2
     pm2 = PortalMazeRecursive('data.txt')
-    pm2.explore(pm2.start[:2], 0, 0, limit=25)
+    pm2.draw()
+    pm2.explore(pm2.start[:2], 0, 0)
     shortest = pm2.mapd[pm2.end]
     print(f'Shortest path: {shortest}')
 
