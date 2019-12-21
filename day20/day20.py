@@ -146,7 +146,7 @@ class PortalMaze:
 class PortalMazeRecursive(PortalMaze):
 
     def explore(self, start, layer, dist):
-        q = [(start, layer, dist)]
+        q = [(start[:2], layer, dist)]
         while q:
             pos, layer, dist = q.pop(0)
             if layer < 0:
@@ -190,8 +190,8 @@ if __name__ == '__main__':
 
     # Part 2
     pm2 = PortalMazeRecursive('data.txt')
-    pm2.draw()
-    pm2.explore(pm2.start[:2], 0, 0)
+    layer = dist = 0
+    pm2.explore(pm2.start, layer, dist)
     shortest = pm2.mapd[pm2.end]
     print(f'Shortest path: {shortest}')
 
