@@ -1,6 +1,11 @@
-"""
+"""day22.py
+
+This problem was really tough and I looked at other solutions before completing this.
+I need to look at it more to really understand what's happening.
+
 """
 import time
+from sympy import Symbol, simplify, mod_inverse
 
 class Deck:
     def __init__(self, n):
@@ -31,7 +36,6 @@ class Deck:
         self.deck = nd
         return self
 
-
 def shuffle(cmds, num_cards, repeat=1):
     d = Deck(num_cards)
 
@@ -45,34 +49,30 @@ def shuffle(cmds, num_cards, repeat=1):
                 d.cut(int(n))
     return d
 
+def find_initial_position(cmds, card_count, pos, shuffle_count):
+    inc = 1
+    offset = 0
+    for cmd, n in cmds:
+        if cmd == 'increment':
+            # deal
+            inc *= mod_inverse(int(n), card_count)
+        elif cmd == 'new':
+            # reverse
+            inc *= -1
+            offset += inc
+        elif cmd == 'cut':
+            # cut
+            cut = int(n)
+            offset += cut * inc
+        else:
+            raise Exception('Invalid Command')
 
-def find_initial_position(cmds, num_cards, pos, repeats):
-    start = time.time()
+        inc = inc % card_count
+        offset = offset % card_count
 
-    for j in range(repeats):
-        if j % 100000 == 0:
-            print(f'Loop: {j:,}, Time: {(time.time()-start):.2f}')
-
-        old_pos = pos
-        for cmd, n in reversed(cmds):
-            # print(cmd, n)
-            if cmd == 'increment':
-                inc = int(n)
-                i = 0
-                newpos = 1.1
-                while int(newpos) != newpos:
-                    newpos = (pos + (i*num_cards)) / inc
-                    i+=1
-                pos = newpos
-            elif cmd == 'new':
-                # d.reverse()
-                pos = num_cards - pos - 1
-            elif cmd == 'cut':
-                cut = int(n)
-                pos = (pos + cut) % num_cards
-            else:
-                print('invalid command')
-    return pos
+    offset *= mod_inverse(1 - inc, card_count)
+    inc = pow(inc, shuffle_count, card_count)
+    return ((pos - offset) * inc + offset) % card_count
 
 
 if __name__ == '__main__':
@@ -80,17 +80,15 @@ if __name__ == '__main__':
         lines = f.read().split('\n')
         cmds = [line.split()[-2:] for line in lines]
 
-    d = shuffle(list(cmds), 10_007)
+    d = shuffle(list(cmds), 10_007, 1)
     findcard = 2019
     ind = d.deck.index(findcard)
     print(f'Index of {findcard}: {ind}')
 
-    pos_order = find_initial_position(cmds, 119315717514047, 2020, 101741582076661)
-    # print(len(pos_order))
+    pos = find_initial_position(cmds, 10007, 2019, -1)
+    print(pos)
 
-
-    # print(Deck(10))
-    # d = shuffle('test.txt', 10)
-    # print(d)
-    # pos = find_initial_position('test.txt', 10, 6)
-    # print(pos)
+    n = 119315717514047
+    r = 101741582076661
+    pos = find_initial_position(cmds, n, 2020, r)
+    print(pos)
