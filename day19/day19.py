@@ -50,14 +50,14 @@ if __name__ == '__main__':
                 xout = yout = None
                 while yout != 0:
                     oldy += 1
-                    print(f'checking {(oldx, oldy)}')
+                    # print(f'checking {(oldx, oldy)}')
                     yout = check(oldx, oldy)
                 while xout != 1:
                     oldx += 1
-                    print(f'checking {(oldx, oldy)}')
+                    # print(f'checking {(oldx, oldy)}')
                     xout = check(oldx, oldy)
 
-                print(f'checking {(oldx, oldy)}')
+                # print(f'checking {(oldx, oldy)}')
                 out = check_box(oldx, oldy)
 
                 if all(out):
@@ -72,16 +72,16 @@ if __name__ == '__main__':
                 oldx, oldy = x, y
                 while yout != 0:
                     y *= 2
-                    print(f'checking {(x, y)}')
+                    # print(f'checking {(x, y)}')
                     yout = check(x, y)
                 # x*=2
                 while xout != 1:
                     x += 1
-                    print(f'checking {(x, y)}')
+                    # print(f'checking {(x, y)}')
                     xout = check(x, y)
 
 
-                print(f'checking {(x, y)}')
+                # print(f'checking {(x, y)}')
                 out = check_box(x, y)
                 if all(out):
                     print(f'Found 100x100 space at {x, y-99}')
