@@ -1,4 +1,7 @@
 """day3.py
+
+https://adventofcode.com/2019/day/3
+
 """
 import time
 

@@ -1,5 +1,7 @@
 """day1.py
 
+https://adventofcode.com/2019/day/1
+
 AOC Day 1
 
 """

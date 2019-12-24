@@ -1,4 +1,7 @@
 """day11.py
+
+https://adventofcode.com/2019/day/11
+
 """
 from computer import Computer
 

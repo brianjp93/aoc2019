@@ -1,4 +1,7 @@
 """day7.py
+
+https://adventofcode.com/2019/day/7
+
 """
 from computer import Computer
 from itertools import permutations

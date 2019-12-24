@@ -1,4 +1,7 @@
 """day10.py
+
+https://adventofcode.com/2019/day/10
+
 """
 from math import atan2, sqrt, pi
 

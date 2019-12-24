@@ -139,6 +139,8 @@ class Robit:
         Assume we have every key
 
         """
+        if self.nodes:
+            return self.nodes
         keys = self.keys.keys()
 
         self.nodes['@'] = Node('@')
@@ -196,7 +198,7 @@ class Robit:
                 newpos = tuple(a+b for a, b in zip(self.moves[i], pos))
                 if maze.get(newpos, None) == dist-1:
                     pos = newpos
-                    dist = maze[pos]
+                    dist = maze[newpos]
                     path.append(pos)
                     c = self.data[pos[1]][pos[0]]
                     if c in LETTERS.upper():
@@ -215,7 +217,7 @@ class Robit:
         paths = set()
         total = 0
         for a,b in zip(path, path[1:]):
-            print(f'getting path between {a} and {b}')
+            # print(f'getting path between {a} and {b}')
             if a == '@':
                 path, doors, _ = self.get_path(b, start=None)
             else:
@@ -233,7 +235,7 @@ class Robit:
             '#': '■'
         }
         out = []
-        print(paths)
+        # print(paths)
         for y, line in enumerate(self.data):
             l = []
             for x, c in enumerate(line):
@@ -263,7 +265,7 @@ class Robit:
                 equalities.append([[kbefore], [key]])
             for door in doors:
                 c = door.lower()
-                print(f'{c} before {key}')
+                # print(f'{c} before {key}')
                 self.nodes[key].force_lt(self.nodes[c])
                 explicit.append(c)
                 explicit.append(key)
@@ -283,7 +285,7 @@ class Robit:
         #         groups[-1].append(n2.name)
         # any_order = [n for n in self.keys.keys() if n not in explicit]
 
-        print(equalities)
+        # print(equalities)
         # print(groups)
         # print(any_order)
 
@@ -298,6 +300,8 @@ class Robit:
         """
         """
         # print(f'Checking key {key} and keys_needed {keys_needed}')
+        if not self.nodes:
+            self.get_nodes()
         if keys_needed is None:
             keys_needed = set(self.keys.keys())
         if not keys_needed:
@@ -321,11 +325,11 @@ class Robit:
         new_path = None
         for next_key in keys_needed:
             if next_key not in not_allowed:
-                nshort = self.find_shortest(key=next_key, keys_needed=keys_needed - set(next_key), p=p+next_key)
+                nshort = self.find_shortest(key=next_key, keys_needed=keys_needed - set(next_key), p=next_key)
                 d = self.nodes[key][next_key] + nshort[0]
                 if d < out:
                     out = d
-                    new_path = nshort[1] + next_key
+                    new_path = p + nshort[1]
                     # print(f'found shorter path with key {key} and next {next_key}')
                 else:
                     pass
@@ -357,7 +361,7 @@ class Robit:
             d = self.nodes[key][next_key] + nshort[0]
             if d < out:
                 out = d
-                new_path = nshort[1] + next_key
+                new_path = p + nshort[1]
                 # print(f'found shorter path with key {key} and next {next_key}')
             else:
                 pass
@@ -386,47 +390,15 @@ if __name__ == '__main__':
         robit = Robit(data)
         print(f'Keys: {robit.key_count}')
         print(f'Key Locations: {robit.keys}')
-        print(robit.current)
+        # print(robit.current)
 
-        # maze = robit.explore(robit.start, 0, with_keys=['a'])
-        # print(maze)
-        # print('found all paths')
-        # for key, value in maze.items():
-            # print(key, value)
-        # print(robit.keys['b'])
 
-        # print(maze.get(robit.keys['b']))
-
-        # valid = robit.valid_paths()
-        # print(valid)
-
-        robit.get_nodes()
-        print(robit.nodes['@'].sorted())
-        # for node in robit.nodes['@']:
-        #     print(node)
-
-        # for node in robit.nodes['a']:
-        #     print(node)
-
-        # print(robit.find_doors_between('b'))
-        # robit.get_conditions()
-
-        # possible path - only checking first two closest
-        # @hmqdjytlxsbewgcrunovpkfaiz
-
-        # shortest, path = robit.find_shortest()
-        # print(f'Shortest Path: {path}')
-        # print(f'Path Length: {shortest}')
-        # for a,b in zip(path, path[1:]):
-        #     n1 = robit.nodes[a]
-        #     # n2 = robit.nodes[b]
-        #     print(n1[b])
-
-        distance = robit.find_shortest()
+        distance, path = robit.find_shortest()
         print(distance)
+        print(path)
 
         # path = '@deacfigbh'
-        # path = '@hmqdjytlxsbewgcrunovpkfaiz'
+        # path = '@dhjymtlxsewbgcunqovrpkfaiz'
         # robit.draw_path(path)
 
 
