@@ -31,11 +31,7 @@ class PortalMaze:
                         self.ymax = j
 
     def is_outer(self, pos):
-        if pos[0] in self.outerportal[0]:
-            return True
-        if pos[1] in self.outerportal[1]:
-            return True
-        return False
+        return any(pos[i] in self.outerportal[i] for i in range(2))
 
     def mark_portals(self):
         portals = {}
@@ -118,8 +114,7 @@ class PortalMaze:
         q = [(start, dist)]
         while q:
             pos, dist = q.pop(0)
-            ch = self.map.get(pos, None)
-            if ch in ' #':
+            if (ch := self.map.get(pos, None)) in ' #':
                 continue
             else:
                 if ch.lower() in LETTERS:
@@ -127,8 +122,7 @@ class PortalMaze:
                     ch = self.map[pos]
 
                 if ch == '.':
-                    odist = self.mapd.get(pos, float('inf'))
-                    if dist < odist:
+                    if dist < (odist := self.mapd.get(pos, float('inf'))):
                         self.mapd[pos] = dist
                         if pos == self.end:
                             break
@@ -151,8 +145,7 @@ class PortalMazeRecursive(PortalMaze):
             pos, layer, dist = q.pop(0)
             if layer < 0:
                 continue
-            ch = self.map.get(pos, None)
-            if ch in ' #':
+            if (ch := self.map.get(pos, None)) in ' #':
                 continue
             else:
                 if ch.lower() in LETTERS:
