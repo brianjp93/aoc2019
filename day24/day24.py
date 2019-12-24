@@ -9,14 +9,6 @@ dat = '''
 ####.
 '''.strip()
 
-# dat = '''
-# ....#
-# #..#.
-# #..##
-# ..#..
-# #....
-# '''.strip()
-
 
 class Eris:
     def __init__(self, dat):
@@ -92,9 +84,9 @@ class Eris:
 
 if __name__ == '__main__':
     eris = Eris(dat)
-    print(eris.draw())
+    # print(eris.draw())
     eris.stop_at_repeat()
-    print(eris.draw())
+    # print(eris.draw())
     rating = eris.get_rating()
     print(rating)
 
@@ -105,85 +97,56 @@ if __name__ == '__main__':
             if c == '#':
                 d.add((x, y, 0))
 
-    for _ in range(200):
+    repeat = 200
+    for _ in range(repeat):
         adj = {}
         for coord in d:
             x, y, layer = coord
             close = ((x+1, y), (x-1, y), (x, y-1), (x, y+1))
-
-            found = 0
             for ncoord in close:
-                # print(ncoord)
                 if ncoord == (2, 2):
                     nlayer = layer - 1
                     if x == 1:
                         for ny in range(5):
                             nc = (0, ny, nlayer)
-                            # print(f'Adding {nc}')
                             adj[nc] = adj.get(nc, 0) + 1
-                            found += 1
                     elif x == 3:
                         for ny in range(5):
                             nc = (4, ny, nlayer)
-                            # print(f'Adding {nc}')
                             adj[nc] = adj.get(nc, 0) + 1
-                            found += 1
                     elif y == 1:
                         for nx in range(5):
                             nc = (nx, 0, nlayer)
-                            # print(f'Adding {nc}')
                             adj[nc] = adj.get(nc, 0) + 1
-                            found += 1
                     elif y == 3:
                         for nx in range(5):
                             nc = (nx, 4, nlayer)
-                            # print(f'Adding {nc}')
                             adj[nc] = adj.get(nc, 0) + 1
-                            found += 1
                     else:
-                        print('????')
                         raise Exception()
 
                 elif any(n in (-1, 5) for n in ncoord):
                     nlayer = layer + 1
                     if ncoord[0] == -1:
                         nc = (1, 2, nlayer)
-                        # print(f'Adding {nc}')
-                        adj[nc] = adj.get(nc, 0) + 1
-                        found += 1
                     elif ncoord[0] == 5:
                         nc = (3, 2, nlayer)
-                        # print(f'Adding {nc}')
-                        adj[nc] = adj.get(nc, 0) + 1
-                        found += 1
-
                     if ncoord[1] == -1:
                         nc = (2, 1, nlayer)
-                        # print(f'Adding {nc}')
-                        adj[nc] = adj.get(nc, 0) + 1
-                        found += 1
                     elif ncoord[1] == 5:
                         nc = (2, 3, nlayer)
-                        # print(f'Adding {nc}')
-                        adj[nc] = adj.get(nc, 0) + 1
-                        found += 1
+                    adj[nc] = adj.get(nc, 0) + 1
                 else:
                     nc = (ncoord[0], ncoord[1], layer)
-                    # print(f'Adding {nc}')
                     adj[nc] = adj.get(nc, 0) + 1
-                    found += 1
-            # print(f'Found {found} adj to {(x, y)}')
 
         nstate = set()
         for coord, n in adj.items():
             if coord in d:
-                # print(f'{coord} in prev set.')
                 if n == 1:
                     nstate.add(coord)
-            else:
-                if n in [1, 2]:
+            elif n in [1, 2]:
                     nstate.add(coord)
         d = nstate
-        # print(d)
 
-    print(len(d))
+    print(f'Bugs after {repeat} minutes: {len(d)}')
