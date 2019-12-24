@@ -132,10 +132,9 @@ class Aft(Computer):
         instr += 'n\n'
         instr = [ord(x) for x in instr]
         self.inputs += instr
-        print(self.inputs)
+        # print(self.inputs)
         self.run()
-        print(self.output)
-        return ''.join(chr(x) for x in self.output)
+        return self.output[-1]
 
 
 if __name__ == '__main__':
@@ -144,17 +143,10 @@ if __name__ == '__main__':
         # print(data)
         aft = Aft(list(data))
         view = aft.get_view()
-        print(view)
+        # print(view)
         print(aft.sum_alignment_params())
 
         aft = Aft(list(data))
-        aft.init2()
-        print(aft.start)
-        # view = 
-        aft.get_movement_commands()
-        print(aft.total_moves)
-        print(''.join(aft.total_moves))
 
-        print(aft.get_parts())
         out = aft.send_parts()
         print(out)
