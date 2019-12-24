@@ -5,6 +5,7 @@ class Computer:
 
     def __init__(self, program, inputs=[], slow=False):
         self.program = program + ([0]*10000)
+        self.init_program = self.program[:]
         self.i = 0
         self.output = []
         self.inputs = inputs
@@ -42,6 +43,13 @@ class Computer:
                 'run': self.halt, 'step': None
             },
         }
+
+    def reset(self):
+        self.program = self.init_program[:]
+        self.output = []
+        self.inputs = []
+        self.i = 0
+        self.relative_base = 0
 
     def run(self):
         # Will run until HALT code or program ends

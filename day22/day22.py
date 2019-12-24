@@ -80,10 +80,10 @@ if __name__ == '__main__':
         lines = f.read().split('\n')
         cmds = [line.split()[-2:] for line in lines]
 
-    d = shuffle(list(cmds), 10_007, 1)
-    findcard = 2019
-    ind = d.deck.index(findcard)
-    print(f'Index of {findcard}: {ind}')
+    # d = shuffle(list(cmds), 10_007, 1)
+    # findcard = 2019
+    # ind = d.deck.index(findcard)
+    # print(f'Index of {findcard}: {ind}')
 
     pos = find_initial_position(cmds, 10007, 2019, -1)
     print(pos)
