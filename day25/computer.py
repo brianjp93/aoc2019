@@ -12,36 +12,16 @@ class Computer:
         self.relative_base = 0
         self.slow = slow
         self.op = {
-            1: {
-                'run': self.add, 'step': 4
-            },
-            2: {
-                'run': self.mul, 'step': 4
-            },
-            3: {
-                'run': self.take_input, 'step': 2
-            },
-            4: {
-                'run': self.write_output, 'step': 2
-            },
-            5: {
-                'run': self.jump_if_true, 'step': 3
-            },
-            6: {
-                'run': self.jump_if_false, 'step': 3
-            },
-            7: {
-                'run': self.less_than, 'step': 4
-            },
-            8: {
-                'run': self.equal_to, 'step': 4
-            },
-            9: {
-                'run': self.adjust_base, 'step': 2
-            },
-            99: {
-                'run': self.halt, 'step': None
-            },
+            1: {'run': self.add, 'step': 4},
+            2: {'run': self.mul, 'step': 4},
+            3: {'run': self.take_input, 'step': 2},
+            4: {'run': self.write_output, 'step': 2},
+            5: {'run': self.jump_if_true, 'step': 3},
+            6: {'run': self.jump_if_false, 'step': 3},
+            7: {'run': self.less_than, 'step': 4},
+            8: {'run': self.equal_to, 'step': 4},
+            9: {'run': self.adjust_base, 'step': 2},
+            99: {'run': self.halt, 'step': None},
         }
 
     def reset(self):
