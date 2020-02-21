@@ -4,6 +4,10 @@ https://adventofcode.com/2019/day/10
 
 """
 from math import atan2, sqrt, pi
+import pathlib
+
+cwd = pathlib.Path(__file__).parent.absolute()
+dpath = pathlib.PurePath(cwd, 'data.txt')
 
 
 def get_angle(start, end):
@@ -12,7 +16,7 @@ def get_angle(start, end):
     angle = atan2(x, -y)
     if angle < 0:
         angle = (2*pi) + angle
-    return angle 
+    return angle
 
 def get_angles_for(data, coord):
     """
@@ -72,7 +76,7 @@ def get_vaporization_order(data):
     return vaporized
 
 if __name__ == '__main__':
-    with open('data.txt', 'r') as f:
+    with open(dpath, 'r') as f:
         data = [line.strip() for line in f]
         
         best, counts = most_visible_asteroids(data)
