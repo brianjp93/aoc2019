@@ -5,6 +5,10 @@ https://adventofcode.com/2019/day/7
 """
 from computer import Computer
 from itertools import permutations
+import pathlib
+
+cwd = pathlib.Path(__file__).parent.absolute()
+dpath = pathlib.PurePath(cwd, 'data.txt')
 
 
 def get_highest_signals(data, allowed, run_once=True):
@@ -32,7 +36,7 @@ def run_with_signal(data, signal, run_once=True):
     return server[-1].output
 
 if __name__ == '__main__':
-    with open('data.txt', 'r') as f:
+    with open(dpath, 'r') as f:
         data = list(map(int, f.read().split(',')))
 
         out = get_highest_signals(data, '01234', run_once=True)
