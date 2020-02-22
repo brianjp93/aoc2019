@@ -8,6 +8,7 @@ import pathlib
 
 cwd = pathlib.Path(__file__).parent.absolute()
 dpath = pathlib.PurePath(cwd, 'data.txt')
+tpath = pathlib.PurePath(cwd, 'test.txt')
 
 
 def get_angle(start, end):
@@ -85,3 +86,4 @@ if __name__ == '__main__':
 
         vaporized = get_vaporization_order(data)
         print(f'200th Vaporized: {vaporized[199]}')
+
