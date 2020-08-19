@@ -1,8 +1,10 @@
 """day8.py
-
 https://adventofcode.com/2019/day/8
-
 """
+import pathlib
+
+cwd = pathlib.Path(__file__).parent.absolute()
+dpath = pathlib.PurePath(cwd, 'data.txt')
 
 def get_layers(data, width, height):
     y = 0
@@ -19,7 +21,6 @@ def get_layers(data, width, height):
 
 def decode(layers):
     layer = layers[0]
-
     decoded = []
     for i in range(len(layer)):
         decoded_row = []
@@ -39,12 +40,12 @@ def get_non_2(layers, row, index):
 
 def display(image):
     for row in image:
-        row = row.replace('0', '■').replace('2', ' ').replace('1', '□')
+        row = row.replace('0', '.').replace('2', '#').replace('1', '#')
         print(row)
 
 
 if __name__ == '__main__':
-    with open('data.txt', 'r') as f:
+    with open(dpath, 'r') as f:
         data = f.read()
 
         layers = list(get_layers(data, 25, 6))
