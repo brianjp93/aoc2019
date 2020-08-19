@@ -3,6 +3,10 @@
 https://adventofcode.com/2019/day/2
 
 """
+import pathlib
+
+cwd = pathlib.Path(__file__).parent.absolute()
+dpath = pathlib.PurePath(cwd, 'data.txt')
 
 def run_1202(data):
     d = list(data)
@@ -29,7 +33,7 @@ def find_inputs(data, value):
 
 
 if __name__ == '__main__':
-    with open('data.txt', 'r') as f:
+    with open(dpath, 'r') as f:
         data = [int(x) for x in f.read().split(',')]
         p1_data = list(data)
         p1_data[1] = 12
