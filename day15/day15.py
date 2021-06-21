@@ -2,6 +2,7 @@
 """
 from computer import Computer
 import time
+import pathlib
 
 
 class RepairDroid(Computer):
@@ -72,9 +73,11 @@ class RepairDroid(Computer):
 
 
 if __name__ == '__main__':
-    with open('data.txt', 'r') as f:
+    CWD = pathlib.Path(__file__).parent.absolute()
+    dpath = pathlib.PurePath(CWD, "data.txt")
+    with open(dpath, 'r') as f:
         data = list(map(int, f.read().split(',')))
-        
+
         droid = RepairDroid(data)
         droid.explore(2, draw=False)
         # print(droid.draw())
