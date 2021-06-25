@@ -1,5 +1,6 @@
 """day16.py
 """
+import pathlib
 
 class Fft:
     def __init__(self, data, mult=1):
@@ -61,7 +62,9 @@ class Fft:
         print(' | '.join(out))
 
 
-with open('data.txt', 'r') as f:
+CWD = pathlib.Path(__file__).parent.absolute()
+dpath = pathlib.PurePath(CWD, "data.txt")
+with open(dpath, 'r') as f:
     data = f.read().strip()
     data = [int(x) for x in data]
 
